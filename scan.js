@@ -86,7 +86,7 @@ const outputResults = process.env.cc_output_results? true : false;
 const accountId = process.env.accountId;
 const templatesDirPath = process.env.templatesDirPath;
 
-scan(templatePath, region, apikey, accountId, templatesDirPath)
+scan(templatePath, apikey, accountId, templatesDirPath)
   .then(value => {
     const results = Array.isArray(value) ? value : [value]
     const COMPLIANT_MESSAGE = "Template passes configured checks."
