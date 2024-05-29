@@ -42,7 +42,7 @@ jobs:
           - name: Cloud Posture Conformity Pipeline Scanner
             uses: igorschultz/cloud-posture-template-scanner-pipeline@version
             env:
-              cc_apikey: ${{ secrets.apikey }}
+              v1_apikey: ${{ secrets.apikey }}
               maxExtreme: 0
               maxVeryHigh: 1
               maxHigh: 3
@@ -60,7 +60,7 @@ To be able to scan your template using a Docker comtainer, follow the example be
 https://hub.docker.com/r/raphabot/conformity-template-scanner-pipeline
 
 ```bash
-docker run -v /home/ec2-user/dynamotest.template:/app/dynamotest.template -e cc_apikey=$MYAPIKEY -e maxExtreme=0 -e maxVeryHigh=0
+docker run -v /home/ec2-user/dynamotest.template:/app/dynamotest.template -e v1_apikey=$MYAPIKEY -e maxExtreme=0 -e maxVeryHigh=0
 -e maxHigh=0 -e maxMedium=0 -e maxLow=0 -e templatePath=infrastructure.yaml -cc_output_results=true felipecosta09/conformity-template-scanner-pipeline:latest
 ```
 
@@ -74,7 +74,7 @@ docker run -v /home/ec2-user/dynamotest.template:/app/dynamotest.template -e cc_
 To run the scanner in the Node CLI, just set the envinronment variables before execute the node script:
 
 ```bash
-cc_apikey=$MYAPIKEY maxExtreme=0 maxVeryHigh=0 maxHigh=0 maxMedium=0 maxLow=0 templatePath=infrastructure.yaml cc_output_results=true node scan.js
+v1_apikey=$MYAPIKEY maxExtreme=0 maxVeryHigh=0 maxHigh=0 maxMedium=0 maxLow=0 templatePath=infrastructure.yaml cc_output_results=true node scan.js
 ```
 
 ## Contributing
