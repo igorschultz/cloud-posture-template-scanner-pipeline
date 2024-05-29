@@ -16,16 +16,16 @@ const computeFailures = async (result, messages) => {
   console.log(resultAsString);
   await writeFile(RESULTS_FILE_PATH, resultAsString);
   return result.failure.reduce((total, result) => {
-    messages.push(`Risk: ${result.attributes['risk-level']} \tReason: ${result.attributes.message}`);
-    if (result.attributes['risk-level'] === 'EXTREME'){
+    messages.push(`Risk: ${result['riskLevel']} \tReason: ${result.description}`);
+    if (result['riskLevel'] === 'EXTREME'){
       total.extreme +=1;
-    } else if (result.attributes['risk-level'] === 'VERY_HIGH') {
+    } else if (result['riskLevel'] === 'VERY_HIGH') {
       total.veryHigh +=1;
-    } else if (result.attributes['risk-level'] === 'HIGH') {
+    } else if (result['riskLevel'] === 'HIGH') {
       total.high +=1;
-    } else if (result.attributes['risk-level'] === 'MEDIUM') {
+    } else if (result['riskLevel'] === 'MEDIUM') {
       total.medium +=1;
-    } else if (result.attributes['risk-level'] === 'LOW') {
+    } else if (result['riskLevel'] === 'LOW') {
       total.low +=1;
     }
     return total;
@@ -38,31 +38,31 @@ const computeFailures = async (result, messages) => {
   });
 }
 
-const scan = async (templatePath, ccEndpoint, ccApiKey, profileId, accountId, templatesDirPath) => {
-  const cc = new CloudConformity.CloudConformity(ccEndpoint, ccApiKey);
+const scan = async (templatePath, ccApiKey, accountId, templatesDirPath) => {
+  const cc = new CloudConformity.CloudConformity(ccApiKey);
   if (templatesDirPath) {
-    return batchScanTemplates(cc, templatesDirPath, profileId, accountId)
+    return batchScanTemplates(cc, templatesDirPath, accountId)
   }
-  return scanTemplate(cc, templatePath, profileId, accountId)
+  return scanTemplate(cc, templatePath, accountId)
 }
 
 const failOnFailure = (failures, acceptedQty) => {
   return ((failures.extreme > acceptedQty.extreme) || (failures.veryHigh > acceptedQty.veryHigh) || (failures.high > acceptedQty.high) || (failures.medium > acceptedQty.medium) || (failures.low > acceptedQty.low))
 };
 
-const batchScanTemplates = async (cc, templatesDirPath, profileId, accountId) => {
+const batchScanTemplates = async (cc, templatesDirPath, accountId) => {
   const dir = await readDir(templatesDirPath, readOptions)
   return Promise.all(dir.map(async (template) => {
       const fullPath = templatesDirPath + "/" + template
-      return scanTemplate(cc, fullPath, profileId, accountId)
+      return scanTemplate(cc, fullPath, accountId)
   }))
 }
 
-const scanTemplate = async (cc, templatePath, profileId, accountId) => {
+const scanTemplate = async (cc, templatePath, accountId) => {
   const template = await readFile(templatePath, readOptions);
   // Scans the template using Conformity module.
   console.log("Scan template: (%s)", templatePath)
-  const result = await cc.scanACloudFormationTemplateAndReturAsArrays(template, profileId, accountId);
+  const result = await cc.scanACloudFormationTemplateAndReturAsArrays(template, accountId);
   const messages = [];
   const results = await computeFailures(result, messages);
   return {
@@ -73,8 +73,7 @@ const scanTemplate = async (cc, templatePath, profileId, accountId) => {
   };
 }
 
-const region = process.env.cc_region;
-const apikey = process.env.cc_apikey;
+const apikey = process.env.v1_apikey;
 const templatePath = process.env.templatePath;
 const acceptedResults = {
   extreme: process.env.maxExtreme? process.env.maxExtreme : Number.MAX_SAFE_INTEGER,
@@ -84,11 +83,10 @@ const acceptedResults = {
   low: process.env.maxLow? process.env.maxLow : Number.MAX_SAFE_INTEGER
 };
 const outputResults = process.env.cc_output_results? true : false;
-const profileId = process.env.profileId;
 const accountId = process.env.accountId;
 const templatesDirPath = process.env.templatesDirPath;
 
-scan(templatePath, region, apikey, profileId, accountId, templatesDirPath)
+scan(templatePath, region, apikey, accountId, templatesDirPath)
   .then(value => {
     const results = Array.isArray(value) ? value : [value]
     const COMPLIANT_MESSAGE = "Template passes configured checks."

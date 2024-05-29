@@ -1,11 +1,8 @@
-name: "Cloud One Conformity Pipeline Scanner"
-description: "Scan CloudFormation files with Cloud One Conformity."
+name: "Cloud Posture Conformity Pipeline Scanner"
+description: "Scan CloudFormation files with Cloud Posture Template Scanner."
 inputs:
-  cc_apikey:
-    description: "Cloud One Conformity API Key"
-    required: true
-  cc_region:
-    description: "Region of your Cloud One Conformity console, eg us-west-2."
+  v1_apikey:
+    description: "Vision One API Key"
     required: true
   maxExtreme:
     description: "Maximum Extreme detections accepted."
