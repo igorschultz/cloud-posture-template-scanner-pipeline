@@ -38,8 +38,8 @@ const computeFailures = async (result, messages) => {
   });
 }
 
-const scan = async (templatePath, ccApiKey, accountId, templatesDirPath) => {
-  const cc = new CloudConformity.CloudConformity(ccApiKey);
+const scan = async (templatePath, v1_apikey, accountId, templatesDirPath) => {
+  const cc = new CloudConformity.CloudConformity(v1_apikey);
   if (templatesDirPath) {
     return batchScanTemplates(cc, templatesDirPath, accountId)
   }
